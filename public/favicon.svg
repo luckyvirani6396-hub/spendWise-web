@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Rounded Base Badge in Forest Emerald -->
+  <rect width="64" height="64" rx="18" fill="#0F6443"/>
+  <rect x="2" y="2" width="60" height="60" rx="16" stroke="#34D399" stroke-opacity="0.3" stroke-width="2"/>
+
+  <!-- Growth Sprout Leaf (Top Right) -->
+  <path d="M30 26C30 26 25 20 25 15C29 14 34 18 34 22C34 24 32 26 30 26Z" fill="#34D399"/>
+  <path d="M32 27C32 27 38 19 44 18C46 22 43 28 38 29C35 29.5 33 28.5 32 27Z" fill="#10B981"/>
+
+  <!-- Modern White Wallet Body -->
+  <rect x="14" y="26" width="36" height="25" rx="5" fill="#FFFFFF"/>
+  <rect x="14" y="26" width="36" height="8" rx="5" fill="#E8F5EE"/>
+
+  <!-- Wallet Clasp / Badge -->
+  <rect x="42" y="34" width="9" height="9" rx="3" fill="#0F6443"/>
+  <circle cx="46.5" cy="38.5" r="1.8" fill="#F59E0B"/>
+
+  <!-- Rupee Symbol on Wallet -->
+  <path d="M22 34H28M22 37H28M25 34V43M25 37C27 37 28 38.5 28 39.5C28 40.5 27 41.5 25 41.5M26.5 40.5L29 44" stroke="#0F6443" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
