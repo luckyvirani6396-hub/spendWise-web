@@ -1,28 +1,37 @@
 import { Category, IncomeSource, Expense, BudgetAlert, UserSettings } from '../types/finance';
 
-const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'https://spendwise-server-kappa.vercel.app/api';
+
+export function sanitizeApiUrl(rawUrl: string): string {
+  let url = rawUrl.trim();
+  // If multiple http(s) protocols were concatenated (e.g. https://.../https://...)
+  const lastHttpIndex = url.lastIndexOf('http');
+  if (lastHttpIndex > 0) {
+    url = url.substring(lastHttpIndex);
+  }
+  // Remove trailing slashes
+  url = url.replace(/\/+$/, '');
+  // Ensure it ends with /api
+  if (!url.endsWith('/api') && !url.includes('/api/')) {
+    url = `${url}/api`;
+  }
+  return url;
+}
 
 export function getApiBaseUrl(): string {
   try {
     const saved = localStorage.getItem('spendwise_api_url') || localStorage.getItem('finflow_api_url');
     if (saved && saved.trim()) {
-      let clean = saved.trim().replace(/\/+$/, '');
-      if (!clean.endsWith('/api') && !clean.includes('/api/')) {
-        clean = `${clean}/api`;
-      }
-      return clean;
+      return sanitizeApiUrl(saved);
     }
   } catch (e) {
     // Ignore storage errors
   }
-  return DEFAULT_API_URL;
+  return sanitizeApiUrl(DEFAULT_API_URL);
 }
 
 export function setApiBaseUrl(url: string): void {
-  let clean = url.trim().replace(/\/+$/, '');
-  if (!clean.endsWith('/api') && !clean.includes('/api/')) {
-    clean = `${clean}/api`;
-  }
+  const clean = sanitizeApiUrl(url);
   localStorage.setItem('spendwise_api_url', clean);
 }
 
@@ -63,7 +72,21 @@ export function setStoredUser(user: User): void {
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const baseUrl = getApiBaseUrl();
+  let fullUrl: string;
+  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+    fullUrl = endpoint;
+  } else {
+    const baseUrl = getApiBaseUrl().replace(/\/+$/, '');
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    fullUrl = `${baseUrl}${cleanEndpoint}`;
+  }
+
+  // Critical safeguard: strip any accidental duplicate origin concatenation
+  const lastHttpIndex = fullUrl.lastIndexOf('http');
+  if (lastHttpIndex > 0) {
+    fullUrl = fullUrl.substring(lastHttpIndex);
+  }
+
   const token = getAuthToken();
 
   const headers: Record<string, string> = {
@@ -77,13 +100,13 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
   let response: Response;
   try {
-    response = await fetch(`${baseUrl}${endpoint}`, {
+    response = await fetch(fullUrl, {
       ...options,
       headers,
     });
   } catch (err: any) {
     if (err.name === 'TypeError' || err.message?.includes('Failed to fetch')) {
-      throw new Error(`Cannot connect to backend server at ${baseUrl}. Please ensure the SpendWise backend is running on port 5000.`);
+      throw new Error(`Cannot connect to backend server at ${fullUrl}. Please check your connection or CORS settings.`);
     }
     throw err;
   }
