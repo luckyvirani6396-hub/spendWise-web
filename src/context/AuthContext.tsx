@@ -73,9 +73,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await checkBackendStatus();
   };
 
-  const register = async (name: string, identifier: string, password: string) => {
+  const register = async (name: string, identifier: string, password: string, otp?: string) => {
     clearLocalCache();
-    const res = await api.register(name, identifier, password);
+    const res = await api.register(name, identifier, password, otp);
     setUser(res.user);
     setToken(res.token);
     await checkBackendStatus();

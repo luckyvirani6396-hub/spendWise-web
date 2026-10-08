@@ -61,6 +61,10 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({ name, className = 'w
       return <Film {...iconProps} />;
     case 'Gift':
       return <Gift {...iconProps} />;
+    case 'ShoppingCart':
+      return <ShoppingBag {...iconProps} />;
+    case 'Heart':
+      return <HeartHandshake {...iconProps} />;
     default:
       return <Tag {...iconProps} />;
   }
