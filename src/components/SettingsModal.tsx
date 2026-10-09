@@ -18,16 +18,18 @@ import {
   Send,
   Fingerprint,
   Lock,
-  Shield
+  Shield,
+  User
 } from 'lucide-react';
 import { biometricService } from '../services/biometricService';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenEditProfile?: () => void;
 }
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, onOpenEditProfile }) => {
   const { settings, updateSettings, resetToDefault, triggerDailyExpenseSummary } = useFinance();
 
   const [testingReminder, setTestingReminder] = useState(false);
@@ -277,7 +279,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 />
               </div>
 
-              <div className="flex flex-col justify-end">
+              <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                {onOpenEditProfile && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenEditProfile();
+                    }}
+                    className="py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-[#0F6443] border border-emerald-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition"
+                  >
+                    <User className="w-3.5 h-3.5" />
+                    <span>Edit Profile & Account</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
                   onClick={handleResetData}

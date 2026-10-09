@@ -15,6 +15,7 @@ import { HowItWorksModal } from './components/HowItWorksModal';
 import { NotificationDrawer } from './components/NotificationDrawer';
 import { DailySummaryModal } from './components/DailySummaryModal';
 import { SettingsModal } from './components/SettingsModal';
+import { EditProfileModal } from './components/EditProfileModal';
 import { BiometricLockScreen } from './components/BiometricLockScreen';
 import { mobileService } from './services/mobileService';
 import { biometricService } from './services/biometricService';
@@ -38,7 +39,9 @@ import {
   Menu, 
   X, 
   Sparkles, 
-  ArrowRightLeft 
+  ArrowRightLeft,
+  Pencil,
+  User
 } from 'lucide-react';
 
 export type NavTab = 'dashboard' | 'expenses' | 'budgets' | 'income' | 'investments' | 'savings' | 'reports';
@@ -64,6 +67,7 @@ const AppContent: React.FC = () => {
   const [isDailySummaryOpen, setIsDailySummaryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   // Biometric & App Lock state
   const [isSessionLocked, setIsSessionLocked] = useState(() => biometricService.isSessionLocked());
@@ -106,6 +110,10 @@ const AppContent: React.FC = () => {
     }
     if (isDailySummaryOpen) {
       setIsDailySummaryOpen(false);
+      return true;
+    }
+    if (isEditProfileOpen) {
+      setIsEditProfileOpen(false);
       return true;
     }
     if (isSettingsOpen) {
@@ -484,6 +492,17 @@ const AppContent: React.FC = () => {
                   <p className="text-xs text-gray-500 font-medium truncate">{user?.email || user?.mobile || 'Personal Account'}</p>
                 </div>
               </div>
+
+              <button
+                onClick={() => {
+                  setIsProfileMenuOpen(false);
+                  setIsEditProfileOpen(true);
+                }}
+                className="px-3 py-1.5 bg-white border border-gray-200 hover:border-emerald-500 text-xs font-bold text-gray-700 hover:text-[#0F6443] rounded-xl flex items-center gap-1.5 shadow-xs transition shrink-0 active:scale-95"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                <span>Edit</span>
+              </button>
             </div>
 
             {/* Financial Sections Grid (Income, Investment, Savings Goal, Reports) */}
@@ -614,6 +633,21 @@ const AppContent: React.FC = () => {
                 <span className="text-[11px] text-emerald-700">Open</span>
               </button>
 
+              {/* Account & Profile (Edit Details / Delete Account) */}
+              <button
+                onClick={() => {
+                  setIsProfileMenuOpen(false);
+                  setIsEditProfileOpen(true);
+                }}
+                className="w-full p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold flex items-center justify-between transition"
+              >
+                <span className="flex items-center gap-2.5">
+                  <User className="w-4 h-4 text-emerald-600" />
+                  <span>Account & Profile Settings</span>
+                </span>
+                <span className="text-[11px] text-gray-400 font-medium">Manage</span>
+              </button>
+
               {/* Settings & Preferences */}
               <button
                 onClick={() => {
@@ -683,6 +717,12 @@ const AppContent: React.FC = () => {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+        onOpenEditProfile={() => setIsEditProfileOpen(true)}
+      />
+
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
       />
 
       {isSessionLocked && (

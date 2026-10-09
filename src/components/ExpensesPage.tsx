@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { Search, Filter, Plus, Trash2, ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react';
+import { Search, Plus, Trash2, Pencil } from 'lucide-react';
 import { CategoryIcon } from './CategoryIcon';
+import { Expense, IncomeSource } from '../types/finance';
+import { AddExpenseModal } from './AddExpenseModal';
+import { AddIncomeModal } from './AddIncomeModal';
 
 interface ExpensesPageProps {
   onOpenAddExpense: (categoryId?: string) => void;
@@ -10,10 +13,13 @@ interface ExpensesPageProps {
 type TransactionFilter = 'All' | 'Income' | 'Expenses' | 'Investments';
 
 export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) => {
-  const { expenses, incomes, categories, deleteExpense, settings } = useFinance();
+  const { expenses, incomes, categories, deleteExpense, deleteIncome, settings } = useFinance();
   const [activeFilter, setActiveFilter] = useState<TransactionFilter>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [editingIncome, setEditingIncome] = useState<IncomeSource | null>(null);
 
   interface TransactionItem {
     id: string;
@@ -28,7 +34,6 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
     raw: any;
   }
 
-  // Group transactions by date
   // Build unified transaction list
   const expenseItems: TransactionItem[] = expenses.map((e) => {
     const cat = categories.find((c) => c.id === e.category_id);
@@ -88,6 +93,26 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
 
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
 
+  const handleEdit = (item: TransactionItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (item.type === 'income') {
+      setEditingIncome(item.raw);
+    } else {
+      setEditingExpense(item.raw);
+    }
+  };
+
+  const handleDelete = (item: TransactionItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Delete "${item.title}"?`)) {
+      if (item.type === 'income') {
+        deleteIncome(item.id);
+      } else {
+        deleteExpense(item.id);
+      }
+    }
+  };
+
   return (
     <div className="space-y-4 max-w-3xl mx-auto pb-10">
       
@@ -144,7 +169,7 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
         })}
       </div>
 
-      {/* Transactions List Grouped by Date matching Screen 3 */}
+      {/* Transactions List Grouped by Date */}
       {sortedDates.length === 0 ? (
         <div className="p-8 text-center bg-white rounded-3xl border border-slate-100 text-slate-400 text-xs">
           No transactions found for this filter.
@@ -179,9 +204,10 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="p-3.5 flex items-center justify-between hover:bg-slate-50/50 transition group"
+                      onClick={(e) => handleEdit(item, e)}
+                      className="p-3.5 flex items-center justify-between hover:bg-slate-50/70 transition cursor-pointer group"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div
                           className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs"
                           style={{
@@ -191,15 +217,15 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
                         >
                           <CategoryIcon name={item.categoryIcon} className="w-5 h-5" />
                         </div>
-                        <div>
-                          <div className="text-xs font-bold text-slate-900">{item.title}</div>
-                          <div className="text-[11px] text-slate-400 font-medium">
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-900 truncate">{item.title}</div>
+                          <div className="text-[11px] text-slate-400 font-medium truncate">
                             {item.categoryName} • {item.time}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                         <div className="text-right">
                           <span
                             className={`text-xs font-black ${
@@ -212,15 +238,23 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
                           </span>
                         </div>
 
-                        {item.type !== 'income' && (
-                          <button
-                            onClick={() => deleteExpense(item.id)}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-rose-500 transition"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                        {/* Edit Button */}
+                        <button
+                          onClick={(e) => handleEdit(item, e)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#0F6443] hover:bg-emerald-50 transition active:scale-95"
+                          title="Edit transaction"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Delete Button */}
+                        <button
+                          onClick={(e) => handleDelete(item, e)}
+                          className="p-1.5 rounded-lg text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition active:scale-95"
+                          title="Delete transaction"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -230,6 +264,26 @@ export const ExpensesPage: React.FC<ExpensesPageProps> = ({ onOpenAddExpense }) 
           })}
         </div>
       )}
+
+      {/* Edit Expense Modal */}
+      {editingExpense && (
+        <AddExpenseModal
+          isOpen={!!editingExpense}
+          onClose={() => setEditingExpense(null)}
+          expenseToEdit={editingExpense}
+        />
+      )}
+
+      {/* Edit Income Modal */}
+      {editingIncome && (
+        <AddIncomeModal
+          isOpen={!!editingIncome}
+          onClose={() => setEditingIncome(null)}
+          incomeToEdit={editingIncome}
+        />
+      )}
+
     </div>
   );
 };
+

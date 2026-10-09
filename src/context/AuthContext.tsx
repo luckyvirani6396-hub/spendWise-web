@@ -12,6 +12,8 @@ interface AuthContextType {
   register: (name: string, identifier: string, password: string, otp?: string) => Promise<void>;
   logout: () => void;
   checkBackendStatus: () => Promise<boolean>;
+  updateProfile: (data: { name?: string; email?: string; mobile?: string; password?: string; currency_symbol?: string }) => Promise<void>;
+  deleteAccount: () => Promise<{ deletion_date: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,11 +47,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const res = await api.getMe();
           setUser(res.user);
-        } catch (err) {
-          console.warn('Session expired or invalid, logging out:', err);
-          removeAuthToken();
-          setUser(null);
-          setToken(null);
+        } catch (err: any) {
+          const isAuthError = 
+            err.message?.includes('401') || 
+            err.message?.includes('403') || 
+            err.message?.includes('User not found') ||
+            err.message?.includes('Invalid token');
+
+          if (isAuthError) {
+            console.warn('Session expired or invalid, logging out:', err);
+            removeAuthToken();
+            setUser(null);
+            setToken(null);
+          } else {
+            console.warn('Network issue or backend sleeping, preserving session & cached data:', err);
+          }
         }
       }
       setIsLoading(false);
@@ -58,15 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initAuth();
   }, []);
 
-  const clearLocalCache = () => {
-    localStorage.removeItem('spendwise_incomes_v1');
-    localStorage.removeItem('spendwise_expenses_v1');
-    localStorage.removeItem('spendwise_categories_v1');
-    localStorage.removeItem('spendwise_alerts_v1');
-  };
-
   const login = async (identifier: string, password: string) => {
-    clearLocalCache();
     const res = await api.login(identifier, password);
     setUser(res.user);
     setToken(res.token);
@@ -74,7 +78,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (name: string, identifier: string, password: string, otp?: string) => {
-    clearLocalCache();
     const res = await api.register(name, identifier, password, otp);
     setUser(res.user);
     setToken(res.token);
@@ -82,10 +85,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    clearLocalCache();
     removeAuthToken();
     setUser(null);
     setToken(null);
+  };
+
+  const updateProfile = async (data: { name?: string; email?: string; mobile?: string; password?: string; currency_symbol?: string }) => {
+    const res = await api.updateProfile(data);
+    setUser(res.user);
+  };
+
+  const deleteAccount = async () => {
+    const res = await api.deleteAccount();
+    logout();
+    return res;
   };
 
   const updateServerUrl = (url: string) => {
@@ -107,6 +120,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         checkBackendStatus,
+        updateProfile,
+        deleteAccount,
       }}
     >
       {children}

@@ -191,6 +191,21 @@ export const api = {
     });
   },
 
+  updateProfile: async (data: { name?: string; email?: string; mobile?: string; password?: string; currency_symbol?: string }): Promise<{ user: User; message: string }> => {
+    const res = await request<{ user: User; message: string }>('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    setStoredUser(res.user);
+    return res;
+  },
+
+  deleteAccount: async (): Promise<{ success: boolean; message: string; deletion_date: string }> => {
+    return request('/auth/account', {
+      method: 'DELETE',
+    });
+  },
+
   // Categories
   getCategories: async (): Promise<Category[]> => {
     return request('/categories');

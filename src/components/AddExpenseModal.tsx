@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { PaymentMethod } from '../types/finance';
+import { PaymentMethod, Expense } from '../types/finance';
 import { ArrowLeft, Calendar, Clock, CreditCard, ChevronDown, Check, Utensils, Train, User, FileText } from 'lucide-react';
 import { CategoryIcon } from './CategoryIcon';
 import { format } from 'date-fns';
@@ -9,6 +9,7 @@ interface AddExpenseModalProps {
   isOpen: boolean;
   onClose: () => void;
   preselectedCategoryId?: string;
+  expenseToEdit?: Expense | null;
 }
 
 const PAYMENT_METHODS: PaymentMethod[] = [
@@ -24,8 +25,9 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   isOpen,
   onClose,
   preselectedCategoryId,
+  expenseToEdit,
 }) => {
-  const { categories, addExpense, settings } = useFinance();
+  const { categories, addExpense, updateExpense, settings } = useFinance();
 
   const [amount, setAmount] = useState<string>('');
   const [categoryId, setCategoryId] = useState<string>('');
@@ -38,18 +40,28 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      if (preselectedCategoryId) {
-        setCategoryId(preselectedCategoryId);
-      } else if (categories.length > 0 && !categoryId) {
-        setCategoryId(categories[0].id);
+      if (expenseToEdit) {
+        setCategoryId(expenseToEdit.category_id);
+        setDate(expenseToEdit.date);
+        setTime(expenseToEdit.time || format(new Date(), 'HH:mm'));
+        setAmount(expenseToEdit.amount.toString());
+        setDescription(expenseToEdit.description);
+        setPaymentMethod(expenseToEdit.payment_method || 'UPI');
+        setError(null);
+      } else {
+        if (preselectedCategoryId) {
+          setCategoryId(preselectedCategoryId);
+        } else if (categories.length > 0 && !categoryId) {
+          setCategoryId(categories[0].id);
+        }
+        setDate(format(new Date(), 'yyyy-MM-dd'));
+        setTime(format(new Date(), 'HH:mm'));
+        setAmount('');
+        setDescription('');
+        setError(null);
       }
-      setDate(format(new Date(), 'yyyy-MM-dd'));
-      setTime(format(new Date(), 'HH:mm'));
-      setAmount('');
-      setDescription('');
-      setError(null);
     }
-  }, [isOpen, preselectedCategoryId, categories]);
+  }, [isOpen, preselectedCategoryId, expenseToEdit, categories]);
 
   if (!isOpen) return null;
 
@@ -67,15 +79,28 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     setSubmitting(true);
     try {
       const selectedCat = categories.find((c) => c.id === categoryId);
-      await addExpense({
-        category_id: categoryId,
-        description: description.trim() || selectedCat?.name || 'Expense',
-        amount: Number(amount),
-        date: date,
-        time: time,
-        payment_method: paymentMethod,
-        notes: '',
-      });
+      const desc = description.trim() || selectedCat?.name || 'Expense';
+      if (expenseToEdit) {
+        await updateExpense({
+          ...expenseToEdit,
+          category_id: categoryId,
+          description: desc,
+          amount: Number(amount),
+          date: date,
+          time: time,
+          payment_method: paymentMethod,
+        });
+      } else {
+        await addExpense({
+          category_id: categoryId,
+          description: desc,
+          amount: Number(amount),
+          date: date,
+          time: time,
+          payment_method: paymentMethod,
+          notes: '',
+        });
+      }
       onClose();
     } catch (err: any) {
       setError(err.message || 'Failed to record expense');
@@ -106,7 +131,9 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h2 className="font-extrabold text-base text-slate-900">Add Expense</h2>
+          <h2 className="font-extrabold text-base text-slate-900">
+            {expenseToEdit ? 'Edit Transaction' : 'Add Expense'}
+          </h2>
           <div className="w-9" /> {/* Spacer */}
         </div>
 
@@ -250,13 +277,13 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             </div>
           </div>
 
-          {/* Big Forest Green Add Expense Button */}
+          {/* Big Forest Green Add/Update Expense Button */}
           <button
             type="submit"
             disabled={submitting}
             className="w-full py-3.5 bg-[#0F6443] hover:bg-[#0b4d33] text-white font-bold text-sm rounded-2xl shadow-md shadow-emerald-950/15 transition active:scale-98 disabled:opacity-50"
           >
-            {submitting ? 'Recording...' : 'Add Expense'}
+            {submitting ? 'Saving...' : expenseToEdit ? 'Save Changes' : 'Add Expense'}
           </button>
 
           {/* Quick Categories Section matching Screen 2 */}

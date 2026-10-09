@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useFinance } from '../context/FinanceContext';
-import { X, Wallet, Calendar, Plus, Check } from 'lucide-react';
+import { IncomeSource } from '../types/finance';
+import { X, Wallet, Calendar, Plus, Check, Clock, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface AddIncomeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  incomeToEdit?: IncomeSource | null;
 }
 
 const COMMON_SOURCES = [
@@ -18,12 +20,13 @@ const COMMON_SOURCES = [
   'Pocket Money / Allowance',
 ];
 
-export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose }) => {
-  const { addIncome, settings, selectedMonth } = useFinance();
+export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose, incomeToEdit }) => {
+  const { addIncome, updateIncome, settings, selectedMonth } = useFinance();
 
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [status, setStatus] = useState<'received' | 'pending'>('received');
   const [isRecurring, setIsRecurring] = useState(true);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
@@ -31,14 +34,36 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose 
 
   useEffect(() => {
     if (isOpen) {
-      setName('');
-      setAmount('');
-      setDate(format(new Date(), 'yyyy-MM-dd'));
-      setIsRecurring(true);
-      setNotes('');
-      setError(null);
+      if (incomeToEdit) {
+        setName(incomeToEdit.name);
+        setAmount(incomeToEdit.amount.toString());
+        setDate(incomeToEdit.date || format(new Date(), 'yyyy-MM-dd'));
+        setStatus(incomeToEdit.status || 'received');
+        setIsRecurring(incomeToEdit.is_recurring);
+        setNotes(incomeToEdit.notes || '');
+        setError(null);
+      } else {
+        setName('');
+        setAmount('');
+        const today = format(new Date(), 'yyyy-MM-dd');
+        setDate(today);
+        setStatus('received');
+        setIsRecurring(true);
+        setNotes('');
+        setError(null);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, incomeToEdit]);
+
+  const handleDateChange = (newDate: string) => {
+    setDate(newDate);
+    const today = format(new Date(), 'yyyy-MM-dd');
+    if (newDate > today) {
+      setStatus('pending');
+    } else {
+      setStatus('received');
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -58,15 +83,28 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose 
     setError(null);
     try {
       const monthStr = date.substring(0, 7) || selectedMonth;
-      await addIncome({
-        name: name.trim(),
-        amount: numAmount,
-        is_recurring: isRecurring,
-        status: 'received',
-        date,
-        month: monthStr,
-        notes: notes.trim() || undefined,
-      });
+      if (incomeToEdit) {
+        await updateIncome({
+          ...incomeToEdit,
+          name: name.trim(),
+          amount: numAmount,
+          is_recurring: isRecurring,
+          status,
+          date,
+          month: monthStr,
+          notes: notes.trim() || undefined,
+        });
+      } else {
+        await addIncome({
+          name: name.trim(),
+          amount: numAmount,
+          is_recurring: isRecurring,
+          status,
+          date,
+          month: monthStr,
+          notes: notes.trim() || undefined,
+        });
+      }
       onClose();
     } catch (err: any) {
       setError(err.message || 'Failed to save income source');
@@ -86,8 +124,12 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose 
               <Wallet className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">Add Income Source</h2>
-              <p className="text-[11px] text-slate-500 font-medium">Record salary, freelance, or other earnings</p>
+              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                {incomeToEdit ? 'Edit Income' : 'Add Income Source'}
+              </h2>
+              <p className="text-[11px] text-slate-500 font-medium">
+                {incomeToEdit ? 'Update income amount, status or details' : 'Record salary, freelance, or other earnings'}
+              </p>
             </div>
           </div>
 
@@ -164,7 +206,7 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose 
           {/* Date Picker */}
           <div>
             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-              Date Received
+              Income Date
             </label>
             <div className="relative">
               <Calendar className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -172,10 +214,67 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose 
                 type="date"
                 required
                 value={date}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => handleDateChange(e.target.value)}
                 className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#0F6443] focus:bg-white transition"
               />
             </div>
+          </div>
+
+          {/* Status Selector: Received vs Pending */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                Income Status
+              </label>
+              {date > format(new Date(), 'yyyy-MM-dd') && (
+                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60 flex items-center gap-1">
+                  <Clock className="w-3 h-3 text-amber-600" />
+                  Auto-set to Pending (Future date)
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setStatus('received')}
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition ${
+                  status === 'received'
+                    ? 'bg-[#E8F5EE] border-[#0F6443] text-[#0F6443] shadow-xs'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <CheckCircle2 className={`w-4 h-4 ${status === 'received' ? 'text-[#0F6443]' : 'text-slate-400'}`} />
+                <span>Received</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStatus('pending')}
+                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition ${
+                  status === 'pending'
+                    ? 'bg-amber-50 border-amber-500 text-amber-700 shadow-xs'
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <Clock className={`w-4 h-4 ${status === 'pending' ? 'text-amber-600' : 'text-slate-400'}`} />
+                <span>Pending</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Notes (Optional) */}
+          <div>
+            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+              Notes (Optional)
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Expected by 25th, Client invoice #102"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:border-[#0F6443] focus:bg-white transition"
+            />
           </div>
 
           {/* Recurring Toggle */}
@@ -212,7 +311,7 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose 
               ) : (
                 <>
                   <Plus className="w-4 h-4" />
-                  <span>Save Income</span>
+                  <span>{incomeToEdit ? 'Save Changes' : 'Save Income'}</span>
                 </>
               )}
             </button>
