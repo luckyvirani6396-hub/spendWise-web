@@ -211,12 +211,22 @@ export const api = {
     return request('/categories');
   },
 
-  saveCategory: async (category: Partial<Category>): Promise<Category> => {
-    if (category.id) {
-      return request(`/categories/${category.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(category),
-      });
+  saveCategory: async (category: Partial<Category>, isUpdate = false): Promise<Category> => {
+    if (isUpdate && category.id) {
+      try {
+        return await request(`/categories/${category.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(category),
+        });
+      } catch (err: any) {
+        if (err.message?.includes('not found') || err.message?.includes('404')) {
+          return await request('/categories', {
+            method: 'POST',
+            body: JSON.stringify(category),
+          });
+        }
+        throw err;
+      }
     }
     return request('/categories', {
       method: 'POST',
@@ -233,12 +243,22 @@ export const api = {
     return request('/incomes');
   },
 
-  saveIncome: async (income: Partial<IncomeSource>): Promise<IncomeSource> => {
-    if (income.id) {
-      return request(`/incomes/${income.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(income),
-      });
+  saveIncome: async (income: Partial<IncomeSource>, isUpdate = false): Promise<IncomeSource> => {
+    if (isUpdate && income.id) {
+      try {
+        return await request(`/incomes/${income.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(income),
+        });
+      } catch (err: any) {
+        if (err.message?.includes('not found') || err.message?.includes('404')) {
+          return await request('/incomes', {
+            method: 'POST',
+            body: JSON.stringify(income),
+          });
+        }
+        throw err;
+      }
     }
     return request('/incomes', {
       method: 'POST',
@@ -255,12 +275,22 @@ export const api = {
     return request('/expenses');
   },
 
-  saveExpense: async (expense: Partial<Expense>): Promise<Expense> => {
-    if (expense.id) {
-      return request(`/expenses/${expense.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(expense),
-      });
+  saveExpense: async (expense: Partial<Expense>, isUpdate = false): Promise<Expense> => {
+    if (isUpdate && expense.id) {
+      try {
+        return await request(`/expenses/${expense.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(expense),
+        });
+      } catch (err: any) {
+        if (err.message?.includes('not found') || err.message?.includes('404')) {
+          return await request('/expenses', {
+            method: 'POST',
+            body: JSON.stringify(expense),
+          });
+        }
+        throw err;
+      }
     }
     return request('/expenses', {
       method: 'POST',

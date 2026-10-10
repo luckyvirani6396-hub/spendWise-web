@@ -81,10 +81,10 @@ export const dbService = {
     return getLocalData<Category[]>(LOCAL_STORAGE_KEYS.CATEGORIES, INITIAL_CATEGORIES);
   },
 
-  async saveCategory(category: Category): Promise<Category> {
+  async saveCategory(category: Category, isUpdate = false): Promise<Category> {
     if (getAuthToken()) {
       try {
-        const saved = await api.saveCategory(category);
+        const saved = await api.saveCategory(category, isUpdate);
         const local = getLocalData<Category[]>(LOCAL_STORAGE_KEYS.CATEGORIES, INITIAL_CATEGORIES);
         const index = local.findIndex((c) => c.id === category.id);
         if (index >= 0) local[index] = saved;
@@ -142,10 +142,10 @@ export const dbService = {
     return local;
   },
 
-  async saveIncomeSource(income: IncomeSource): Promise<IncomeSource> {
+  async saveIncomeSource(income: IncomeSource, isUpdate = false): Promise<IncomeSource> {
     if (getAuthToken()) {
       try {
-        const saved = await api.saveIncome(income);
+        const saved = await api.saveIncome(income, isUpdate);
         const local = getLocalData<IncomeSource[]>(LOCAL_STORAGE_KEYS.INCOMES, INITIAL_INCOME_SOURCES);
         const index = local.findIndex((i) => i.id === income.id);
         if (index >= 0) local[index] = saved;
@@ -202,10 +202,10 @@ export const dbService = {
     return local;
   },
 
-  async saveExpense(expense: Expense): Promise<Expense> {
+  async saveExpense(expense: Expense, isUpdate = false): Promise<Expense> {
     if (getAuthToken()) {
       try {
-        const saved = await api.saveExpense(expense);
+        const saved = await api.saveExpense(expense, isUpdate);
         const local = getLocalData<Expense[]>(LOCAL_STORAGE_KEYS.EXPENSES, INITIAL_EXPENSES);
         const index = local.findIndex((e) => e.id === expense.id);
         if (index >= 0) local[index] = saved;

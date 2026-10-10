@@ -320,7 +320,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       created_at: new Date().toISOString(),
     };
 
-    const saved = await dbService.saveExpense(newExpense);
+    const saved = await dbService.saveExpense(newExpense, false);
     setExpenses((prev) => [saved, ...prev]);
 
     // Check thresholds
@@ -329,7 +329,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateExpense = async (expense: Expense): Promise<Expense> => {
-    const updated = await dbService.saveExpense(expense);
+    const updated = await dbService.saveExpense(expense, true);
     setExpenses((prev) => prev.map((e) => (e.id === expense.id ? updated : e)));
     return updated;
   };
@@ -346,13 +346,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       id: `inc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       created_at: new Date().toISOString(),
     };
-    const saved = await dbService.saveIncomeSource(newIncome);
+    const saved = await dbService.saveIncomeSource(newIncome, false);
     setIncomes((prev) => [saved, ...prev]);
     return saved;
   };
 
   const updateIncome = async (income: IncomeSource): Promise<IncomeSource> => {
-    const updated = await dbService.saveIncomeSource(income);
+    const updated = await dbService.saveIncomeSource(income, true);
     setIncomes((prev) => prev.map((i) => (i.id === income.id ? updated : i)));
     return updated;
   };
@@ -369,13 +369,13 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       id: `cat-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       order_index: categories.length + 1,
     };
-    const saved = await dbService.saveCategory(newCat);
+    const saved = await dbService.saveCategory(newCat, false);
     setCategories((prev) => [...prev, saved]);
     return saved;
   };
 
   const updateCategory = async (category: Category): Promise<Category> => {
-    const updated = await dbService.saveCategory(category);
+    const updated = await dbService.saveCategory(category, true);
     setCategories((prev) => prev.map((c) => (c.id === category.id ? updated : c)));
     return updated;
   };
