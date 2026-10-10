@@ -417,26 +417,10 @@ export const MobileLoginScreen: React.FC = () => {
       {/* ========================================================= */}
       {/* MOBILE SCREEN LAYOUT (Pixel-Perfect Match of User's Image)*/}
       {/* ========================================================= */}
-      <div className="lg:hidden flex flex-col min-h-screen w-full relative bg-gradient-to-b from-[#F2F9F5] via-[#EAF5EF] to-[#D5EDE0] overflow-x-hidden">
+      <div className="lg:hidden flex flex-col min-h-screen w-full relative bg-gradient-to-b from-[#F2F9F5] via-[#EAF5EF] to-[#D5EDE0] overflow-x-hidden pt-[max(env(safe-area-inset-top),1rem)]">
         
-        {/* Top Status Bar: 9:41 */}
-        <div className="px-6 pt-3 pb-2 flex items-center justify-between text-slate-900">
-          <span className="text-sm font-bold tracking-tight">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <svg className="w-4 h-3.5 fill-current" viewBox="0 0 16 12">
-              <path d="M1 9h2V3H1v6zm4 2h2V1H5v10zm4-4h2V5H9v4zm4-7v11h2V0h-2z"/>
-            </svg>
-            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 16 16">
-              <path d="M8 2.5a10.9 10.9 0 0 0-7.8 3.3l1.4 1.4A8.9 8.9 0 0 1 8 4.5c2.3 0 4.4.8 6.1 2.3l1.4-1.4A10.9 10.9 0 0 0 8 2.5zM8 6.5a6.9 6.9 0 0 0-4.9 2l1.4 1.4A4.9 4.9 0 0 1 8 8.5c1.2 0 2.4.4 3.3 1.2l1.4-1.4A6.9 6.9 0 0 0 8 6.5zM8 10.5a2.9 2.9 0 0 0-2 1l2 2 2-2a2.9 2.9 0 0 0-2-1z"/>
-            </svg>
-            <div className="w-5 h-2.5 border border-slate-900 rounded-xs p-0.5 flex items-center">
-              <div className="w-3 h-1.5 bg-slate-900 rounded-2xs" />
-            </div>
-          </div>
-        </div>
-
-        {/* SpendWise Brand Header Row: Logo + Brand Name on left, "Skip >" on right */}
-        <div className="px-6 pt-2 flex items-center justify-between">
+        {/* SpendWise Brand Header Row: Logo + Brand Name */}
+        <div className="px-6 pt-3 pb-1 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-2xl bg-[#0F6443] flex items-center justify-center text-white shadow-sm">
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
@@ -452,15 +436,6 @@ export const MobileLoginScreen: React.FC = () => {
               </p>
             </div>
           </div>
-
-          <button 
-            type="button" 
-            onClick={() => setSuccessMsg('Welcome to SpendWise!')}
-            className="text-xs font-bold text-[#0F6443] flex items-center gap-0.5 hover:underline"
-          >
-            <span>Skip</span>
-            <span>&gt;</span>
-          </button>
         </div>
 
         {/* Headline + Artwork Image Row (Side-by-Side matching Image) */}
@@ -488,7 +463,7 @@ export const MobileLoginScreen: React.FC = () => {
         </div>
 
         {/* 4 Feature Circles Row matching User's Image */}
-        <div className="px-6 pt-4 grid grid-cols-4 gap-2 text-center">
+        <div className="px-6 pt-4 pb-2 grid grid-cols-4 gap-2 text-center">
           {/* 1. Track Expenses */}
           <div className="flex flex-col items-center gap-1.5">
             <div className="w-12 h-12 rounded-full bg-[#E6F7EF] flex items-center justify-center text-[#10B981] shadow-2xs">
@@ -520,13 +495,6 @@ export const MobileLoginScreen: React.FC = () => {
             </div>
             <span className="text-[10px] font-bold text-slate-800 leading-tight">Get<br/>Smart Alerts</span>
           </div>
-        </div>
-
-        {/* Carousel Pagination Dots: [ ==  •  • ] */}
-        <div className="flex justify-center items-center gap-1.5 pt-3 pb-3">
-          <span className="w-5 h-1.5 rounded-full bg-[#0F6443]" />
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
         </div>
 
         {/* Floating White Auth Card Container */}
