@@ -120,11 +120,17 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const selectedCategory = categories.find((c) => c.id === categoryId);
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F4F8F5] flex flex-col sm:items-center sm:justify-center sm:p-4 sm:bg-slate-900/40 sm:backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white w-full h-full sm:h-auto sm:max-h-[92vh] sm:max-w-md sm:rounded-[32px] shadow-2xl overflow-hidden border-0 sm:border border-slate-100 flex flex-col">
+    <div 
+      className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs flex flex-col justify-end sm:justify-center sm:items-center sm:p-4 animate-in fade-in duration-150"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white w-full max-h-[92vh] sm:max-h-[88vh] sm:max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col animate-in slide-in-from-bottom duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header matching Screen 2 */}
-        <div className="px-6 py-4 flex items-center justify-between border-b border-slate-50">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-slate-50 shrink-0 bg-white">
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition"
@@ -138,7 +144,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto pb-[max(env(safe-area-inset-bottom),2rem)]">
           
           {/* Centered Large Amount Display matching Screen 2 */}
           <div className="py-4 px-6 bg-slate-50 rounded-2xl flex flex-col items-center justify-center border border-slate-100/80">

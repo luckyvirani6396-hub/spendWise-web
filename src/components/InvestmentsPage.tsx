@@ -196,19 +196,29 @@ export const InvestmentsPage: React.FC = () => {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-[#F4F8F5] flex flex-col sm:items-center sm:justify-center sm:p-4 sm:bg-slate-900/40 sm:backdrop-blur-xs animate-in fade-in duration-150">
-          <form onSubmit={handleAdd} className="bg-white w-full h-full sm:h-auto sm:max-w-md sm:rounded-3xl p-6 shadow-2xl border-0 sm:border border-slate-100 space-y-4 overflow-y-auto flex flex-col justify-between sm:justify-start">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-3 sm:border-0 sm:pb-0">
-                <h3 className="font-black text-slate-900 text-base sm:text-lg">Add Investment</h3>
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
+        <div 
+          className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs flex flex-col justify-end sm:justify-center sm:items-center sm:p-4 animate-in fade-in duration-150"
+          onClick={() => setShowAddModal(false)}
+        >
+          <form 
+            onSubmit={handleAdd} 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white w-full max-h-[90vh] sm:max-h-[85vh] sm:max-w-md rounded-t-[32px] sm:rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200"
+          >
+            {/* Header */}
+            <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 shrink-0 bg-white">
+              <h3 className="font-black text-slate-900 text-base sm:text-lg">Add Investment</h3>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-700 hover:bg-slate-100 transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
               <div>
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Plan / Scheme Name</label>
                 <input
@@ -233,17 +243,18 @@ export const InvestmentsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2.5 pt-4 border-t border-gray-100">
+            {/* Pinned Sticky Footer */}
+            <div className="px-6 py-3.5 border-t border-gray-100 shrink-0 bg-slate-50/90 backdrop-blur-xs flex justify-end gap-2.5 pb-[max(env(safe-area-inset-bottom),1rem)]">
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-4 py-2.5 text-xs text-slate-600 font-bold hover:bg-gray-100 rounded-xl transition"
+                className="px-4 py-2.5 text-xs text-slate-600 font-bold hover:bg-gray-200/60 rounded-xl transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 bg-[#0F6443] hover:bg-[#0b4d33] text-white text-xs font-bold rounded-xl transition shadow-xs"
+                className="px-6 py-2.5 bg-[#0F6443] hover:bg-[#0b4d33] text-white text-xs font-bold rounded-xl transition shadow-md shadow-emerald-950/10 active:scale-95"
               >
                 Save Investment
               </button>

@@ -104,9 +104,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F4F8F5] flex flex-col sm:items-center sm:justify-center sm:p-4 sm:bg-black/60 sm:backdrop-blur-sm animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs flex flex-col justify-end sm:justify-center sm:items-center sm:p-4 animate-in fade-in duration-200"
+      onClick={onClose}
+    >
       <div 
-        className="w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg bg-white sm:rounded-3xl shadow-2xl border-0 sm:border border-gray-100 overflow-hidden text-slate-800 flex flex-col"
+        className="w-full max-h-[92vh] sm:max-h-[88vh] sm:max-w-lg bg-white rounded-t-[32px] sm:rounded-3xl shadow-2xl border border-gray-100 overflow-hidden text-slate-800 flex flex-col animate-in slide-in-from-bottom duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -308,7 +311,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, o
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-[#F9FAF9] border-t border-gray-100 flex items-center justify-between">
+        <div className="px-6 py-3.5 bg-[#F9FAF9] border-t border-gray-100 shrink-0 flex items-center justify-between pb-[max(env(safe-area-inset-bottom),1rem)]">
           <span className="text-xs text-gray-400">SpendWise • Personal Finance</span>
           <div className="flex items-center gap-3">
             <button

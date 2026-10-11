@@ -60,11 +60,17 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ isOpen, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F4F8F5] flex flex-col sm:items-center sm:justify-center sm:p-4 sm:bg-slate-900/40 sm:backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white w-full h-full sm:h-auto sm:max-w-md sm:rounded-[32px] shadow-2xl overflow-y-auto border-0 sm:border border-slate-100 flex flex-col">
+    <div 
+      className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs flex flex-col justify-end sm:justify-center sm:items-center sm:p-4 animate-in fade-in duration-150"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white w-full max-h-[92vh] sm:max-h-[88vh] sm:max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl border border-slate-100 flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
-        <div className="px-6 py-4 flex items-center justify-between border-b border-slate-50">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-slate-50 shrink-0 bg-white">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
               <Moon className="w-5 h-5" />
@@ -83,7 +89,7 @@ export const DailySummaryModal: React.FC<DailySummaryModalProps> = ({ isOpen, on
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-4 overflow-y-auto">
+        <div className="p-6 space-y-4 overflow-y-auto pb-[max(env(safe-area-inset-bottom),2rem)]">
           {/* Today Total Card */}
           <div className="p-5 bg-gradient-to-tr from-[#0F6443] to-[#10B981] text-white rounded-2xl shadow-sm text-center">
             <span className="text-xs font-semibold text-emerald-100">Today's Total Spending</span>

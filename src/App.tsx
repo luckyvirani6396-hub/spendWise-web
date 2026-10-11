@@ -355,7 +355,7 @@ const AppContent: React.FC = () => {
       </main>
 
       {/* Mobile Bottom Navigation Bar (Matching SpendWise mobile screens) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-100 px-3 py-2 shadow-lg">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-gray-100 px-3 py-2 shadow-lg">
         <div className="flex items-center justify-between relative max-w-md mx-auto">
           {/* Home Tab */}
           <button
@@ -463,11 +463,11 @@ const AppContent: React.FC = () => {
       {/* Profile & Features Bottom Sheet Modal */}
       {isProfileMenuOpen && (
         <div 
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in"
+          className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-xs flex flex-col justify-end animate-in fade-in"
           onClick={() => setIsProfileMenuOpen(false)}
         >
           <div 
-            className="bg-white rounded-t-3xl p-5 shadow-2xl border-t border-gray-100 space-y-4 max-h-[85vh] overflow-y-auto max-w-lg mx-auto w-full animate-in slide-in-from-bottom duration-200"
+            className="bg-white rounded-t-3xl p-5 shadow-2xl border-t border-gray-100 space-y-4 max-h-[85vh] overflow-y-auto max-w-lg mx-auto w-full pb-[max(env(safe-area-inset-bottom),1.5rem)] animate-in slide-in-from-bottom duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Sheet Header */}

@@ -139,8 +139,14 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({
   const Icon = current.icon;
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F4F8F5] flex flex-col sm:items-center sm:justify-center sm:p-4 sm:bg-slate-900/50 sm:backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-white w-full h-full sm:h-auto sm:max-w-lg sm:rounded-3xl p-6 sm:p-8 shadow-2xl border-0 sm:border border-slate-100 relative flex flex-col space-y-5 overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs flex flex-col justify-end sm:justify-center sm:items-center sm:p-4 animate-in fade-in duration-150"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white w-full max-h-[92vh] sm:max-h-[88vh] sm:max-w-lg rounded-t-[32px] sm:rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 relative flex flex-col space-y-5 overflow-y-auto pb-[max(env(safe-area-inset-bottom),1.5rem)] animate-in slide-in-from-bottom duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-3 sm:border-0 sm:pb-0">

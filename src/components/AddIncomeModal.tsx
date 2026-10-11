@@ -114,11 +114,17 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#F4F8F5] flex flex-col sm:items-center sm:justify-center sm:p-4 sm:bg-slate-900/50 sm:backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="bg-white w-full h-full sm:h-auto sm:max-w-md sm:rounded-3xl p-6 sm:p-7 shadow-2xl border-0 sm:border border-slate-100 relative space-y-5 overflow-y-auto flex flex-col">
+    <div 
+      className="fixed inset-0 z-[70] bg-slate-900/60 backdrop-blur-xs flex flex-col justify-end sm:justify-center sm:items-center sm:p-4 animate-in fade-in duration-150"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white w-full max-h-[92vh] sm:max-h-[88vh] sm:max-w-md rounded-t-[32px] sm:rounded-3xl shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col animate-in slide-in-from-bottom duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header with Back/Close Button */}
-        <div className="flex items-center justify-between border-b border-gray-100 pb-3 sm:border-0 sm:pb-0">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-gray-100 shrink-0 bg-white">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-[#0F6443] flex items-center justify-center shadow-xs shrink-0">
               <Wallet className="w-5 h-5" />
@@ -147,7 +153,8 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose,
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           
           {/* Amount Input */}
           <div>
@@ -291,20 +298,22 @@ export const AddIncomeModal: React.FC<AddIncomeModalProps> = ({ isOpen, onClose,
             </div>
           </label>
 
-          {/* Actions */}
-          <div className="flex items-center gap-2 pt-2">
+          </div>
+
+          {/* Pinned Sticky Footer Actions */}
+          <div className="px-6 py-3.5 border-t border-gray-100 shrink-0 bg-slate-50/90 backdrop-blur-xs flex items-center gap-3 pb-[max(env(safe-area-inset-bottom),1rem)]">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="w-1/3 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition"
+              className="w-1/3 py-2.5 border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl transition"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="w-2/3 py-3 bg-[#0F6443] hover:bg-[#0a4830] text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-950/15 flex items-center justify-center gap-1.5 transition active:scale-98 disabled:opacity-50"
+              className="w-2/3 py-2.5 bg-[#0F6443] hover:bg-[#0a4830] text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-950/15 flex items-center justify-center gap-1.5 transition active:scale-98 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -109,7 +109,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex justify-end">
+    <div className="fixed inset-0 z-[70] bg-slate-900/40 backdrop-blur-xs flex justify-end">
       <div className="bg-white w-full max-w-md h-full shadow-2xl flex flex-col p-6 space-y-4 overflow-hidden">
         
         {/* Header matching Screen 9 */}
